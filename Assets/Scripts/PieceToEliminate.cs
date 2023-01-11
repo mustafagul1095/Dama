@@ -2,25 +2,24 @@
 
 public class PieceToEliminate
 {
-    private Piece _pieceToEliminate;
-    private Vector2Int _pieceToEliminateCoords = new Vector2Int(500, 500);
-    public Piece Piece => _pieceToEliminate;
-    public Vector2Int PieceToEliminateCoords => _pieceToEliminateCoords;
+    private Piece _piece;
+    public Piece Piece => _piece;
+
+    private Vector2Int _coordinates = new Vector2Int(500, 500);
+    public Vector2Int Coordinates => _coordinates;
     
-    public void SetPieceToEliminate(Piece piece)
+    public void SetPiece(Piece piece)
     {
-        _pieceToEliminate = piece;
-    }
-    public void SetPieceToEliminateCoords(int x, int y)
-    {
-        _pieceToEliminateCoords.x = x;
-        _pieceToEliminateCoords.y = y;
+        _piece = piece;
     }
     
-    public void DestroyPieceToEliminate()
+    public void SetCoordinates(int x, int y)
     {
-        //RemoveFromGridArray(PieceToEliminateCoords.x, PieceToEliminateCoords.y);
-        GameObject.Destroy(_pieceToEliminate.gameObject);
-        SetPieceToEliminateCoords(500,500);
+        _coordinates.x = x;
+        _coordinates.y = y;
+    }
+    
+    public void Destroy()
+    {
     }
 }

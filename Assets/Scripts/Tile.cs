@@ -53,6 +53,5 @@ public class Tile : MonoBehaviour
         gameHandler.ClearCubePlayabilityGrid();
         gameHandler.SetClickedAPiece(false);
         gameHandler.MovePiece(_coordinates.x, _coordinates.y);
-        
     }
 }

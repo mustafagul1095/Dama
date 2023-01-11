@@ -8,7 +8,9 @@ public class GameHandler : MonoBehaviour
     public Board Board => _board;
 
     private Piece _currentPiece;
-    
+
+    public Piece CurrentPiece => _currentPiece;
+
     private bool _redPlayersTurn = false;
     private bool _clickedAPiece = false;
 
@@ -23,6 +25,7 @@ public class GameHandler : MonoBehaviour
     public void PlaceToGridArray(Piece piece, int x, int y)
     {
         _board.Matrix[x, y].Piece = piece;
+        piece.SetTile(_board.Matrix[x, y]);
     }
 
     public void RemoveFromGridArray(int x, int y)
