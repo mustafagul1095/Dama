@@ -5,34 +5,45 @@ using UnityEngine;
 
 public class Tile : MonoBehaviour
 {
+    private Vector2Int _coordinates = new Vector2Int();
+    public Vector2Int Coordinate => _coordinates;
+
     [SerializeField] private GameHandler gameHandler;
     [SerializeField] private GameObject highlight;
 
     private Piece _piece;
+
+    public Piece Piece
+    {
+        get => _piece;
+        set => _piece = value;
+    }
+
+    private bool _playable;
+
+    public bool Playable
+    {
+        get => _playable;
+        set => _playable = value;
+    }
+
     private BoxCollider _boxCollider;
     
-    private Vector2Int _coordiinates = new Vector2Int();
-
     private void Awake()
     {
         FindCoordinates();
         _boxCollider = GetComponent<BoxCollider>();
-    }
-
-    private void Start()
-    {
         gameHandler.OnClickedAPiece += HandlePieceClicked;
     }
 
-    private void FindCoordinates()
+    public void FindCoordinates()
     {
-        _coordiinates.x = Mathf.RoundToInt(transform.position.x / 10) + 1;
-        _coordiinates.y = Mathf.RoundToInt(transform.position.z / 10) + 1;
+        _coordinates = Vector2IntExtensions.GetCoordinateFromPosition(transform.position);
     }
 
     private void HandlePieceClicked()
     {
-        bool available = gameHandler.CubePlayabilityGrid[_coordiinates.x, _coordiinates.y] == 1;
+        bool available = gameHandler.Board.Matrix[_coordinates.x, _coordinates.y].Playable;
         highlight.SetActive(available);
         _boxCollider.enabled = available;
     }
@@ -41,7 +52,7 @@ public class Tile : MonoBehaviour
     {
         gameHandler.ClearCubePlayabilityGrid();
         gameHandler.SetClickedAPiece(false);
-        gameHandler.MovePiece(_coordiinates.x, _coordiinates.y);
+        gameHandler.MovePiece(_coordinates.x, _coordinates.y);
         
     }
 }

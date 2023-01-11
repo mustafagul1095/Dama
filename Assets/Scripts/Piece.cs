@@ -6,22 +6,18 @@ using UnityEngine;
 public class Piece : MonoBehaviour
 {
     [SerializeField] private GameHandler gameHandler;
+    private Board _board;
     private Vector2Int _coordinates = new Vector2Int();
     private bool _normalPlayable = false;
     private CapsuleCollider _collider;
     private bool _pieceHasToTake = false;
     private List<PieceToEliminate> _piecesToEliminate;
-
-    private enum Side
-    {
-        White = 1,
-        Red = 2
-    };
-
+    
     [SerializeField] private Side side;
 
     private void Awake()
     {
+        _board = gameHandler.Board;
         _collider = GetComponent<CapsuleCollider>();
         FindCoordinates();
         PlaceToGrid();
@@ -36,8 +32,7 @@ public class Piece : MonoBehaviour
     
     private void FindCoordinates()
     {
-        _coordinates.x = Mathf.RoundToInt(transform.position.x / 10) + 1;
-        _coordinates.y = Mathf.RoundToInt(transform.position.z / 10) + 1;
+        _coordinates = Vector2IntExtensions.GetCoordinateFromPosition(transform.position);
     }
 
     private Vector3 CoordinatesToPosition(int coordinateX, int coordinateY)
@@ -56,7 +51,7 @@ public class Piece : MonoBehaviour
     
     private void PlaceToGrid()
     {
-        gameHandler.PlaceToGridArray((int)side, _coordinates.x, _coordinates.y);
+        gameHandler.PlaceToGridArray(this, _coordinates.x, _coordinates.y);
     }
     
     private void RemoveFromGrid()
@@ -68,14 +63,13 @@ public class Piece : MonoBehaviour
     {
         if (side == Side.White)
         {
-            _normalPlayable = (gameHandler.GridArray[_coordinates.x + 1, _coordinates.y + 1] == 0 ||
-                               gameHandler.GridArray[_coordinates.x - 1, _coordinates.y + 1] == 0);
+            _normalPlayable = (_board.Matrix[_coordinates.x + 1, _coordinates.y + 1].Piece == null ||
+                               _board.Matrix[_coordinates.x - 1, _coordinates.y + 1].Piece == null);
         }
         else if (side == Side.Red)
         {
-
-            _normalPlayable = (gameHandler.GridArray[_coordinates.x + 1, _coordinates.y - 1] == 0 ||
-                               gameHandler.GridArray[_coordinates.x - 1, _coordinates.y - 1] == 0);
+            _normalPlayable = (_board.Matrix[_coordinates.x + 1, _coordinates.y - 1].Piece == null ||
+                               _board.Matrix[_coordinates.x - 1, _coordinates.y - 1].Piece == null);
         }
     }
 
@@ -84,9 +78,9 @@ public class Piece : MonoBehaviour
         Vector2Int placeToMoveOnTake;
         if (side == Side.White)
         {
-            if (gameHandler.GridArray[_coordinates.x + 1, _coordinates.y + 1] == 2)
+            if (_board.Matrix[_coordinates.x + 1, _coordinates.y + 1].Piece.side == Side.Red)
             {
-                if (gameHandler.GridArray[_coordinates.x + 2, _coordinates.y + 2] == 0)
+                if (_board.Matrix[_coordinates.x + 2, _coordinates.y + 2].Piece == null)
                 {
                     placeToMoveOnTake = HasToTake(_coordinates.x + 2, _coordinates.y + 2);
                     gameHandler.PlaceToCubePlayabilityGridArray(1,placeToMoveOnTake.x,placeToMoveOnTake.y);
@@ -95,9 +89,9 @@ public class Piece : MonoBehaviour
                     _piecesToEliminate.Add(pieceToEliminate);
                 }
             }
-            if (gameHandler.GridArray[_coordinates.x - 1, _coordinates.y + 1] == 2)
+            if (_board.Matrix[_coordinates.x - 1, _coordinates.y + 1].Piece.side == Side.Red)
             {
-                if (gameHandler.GridArray[_coordinates.x - 2, _coordinates.y + 2] == 0)
+                if (_board.Matrix[_coordinates.x - 2, _coordinates.y + 2].Piece == null)
                 {
                     placeToMoveOnTake = HasToTake(_coordinates.x - 2, _coordinates.y + 2);
                     gameHandler.PlaceToCubePlayabilityGridArray(1,placeToMoveOnTake.x,placeToMoveOnTake.y);
@@ -109,9 +103,9 @@ public class Piece : MonoBehaviour
         }
         if (side == Side.Red)
         {
-            if (gameHandler.GridArray[_coordinates.x + 1, _coordinates.y - 1] == 1)
+            if (_board.Matrix[_coordinates.x + 1, _coordinates.y - 1].Piece.side == Side.White)
             {
-                if (gameHandler.GridArray[_coordinates.x + 2, _coordinates.y - 2] == 0)
+                if (_board.Matrix[_coordinates.x + 2, _coordinates.y - 2].Piece == null)
                 {
                     placeToMoveOnTake = HasToTake(_coordinates.x + 2, _coordinates.y - 2);
                     gameHandler.PlaceToCubePlayabilityGridArray(1,placeToMoveOnTake.x,placeToMoveOnTake.y);
@@ -120,9 +114,9 @@ public class Piece : MonoBehaviour
                     _piecesToEliminate.Add(pieceToEliminate);
                 }
             }
-            if (gameHandler.GridArray[_coordinates.x - 1, _coordinates.y - 1] == 1)
+            if (_board.Matrix[_coordinates.x - 1, _coordinates.y - 1].Piece.side == Side.White)
             {
-                if (gameHandler.GridArray[_coordinates.x - 2, _coordinates.y - 2] == 0)
+                if (_board.Matrix[_coordinates.x - 2, _coordinates.y - 2].Piece == null)
                 {
                     placeToMoveOnTake = HasToTake(_coordinates.x - 2, _coordinates.y - 2);
                     gameHandler.PlaceToCubePlayabilityGridArray(1,placeToMoveOnTake.x,placeToMoveOnTake.y);
@@ -134,19 +128,10 @@ public class Piece : MonoBehaviour
         }
     }
 
-    private void CheckPieceToEliminate()
-    {
-        if (Vector2Int.Distance(gameHandler.PieceToEliminate1.PieceToEliminateCoords, _coordinates) < 0.01)
-        {
-            gameHandler.SetPieceToEliminate(this);
-        }
-    }
     private Vector2Int HasToTake(int x, int y)
     {
         gameHandler.SetHasToTake(true);
         _pieceHasToTake = true;
-        gameHandler.ClearPiecePlayabilityGrid();
-        gameHandler.PlaceToPiecePlayabilityGridArray(1, _coordinates.x, _coordinates.y);
         return new Vector2Int(x, y);
     }
 
@@ -170,11 +155,11 @@ public class Piece : MonoBehaviour
         {
             if (side == Side.White)
             {
-                if (gameHandler.GridArray[_coordinates.x + 1, _coordinates.y + 1] == 0 )
+                if (_board.Matrix[_coordinates.x + 1, _coordinates.y + 1].Piece == null)
                 {
                     gameHandler.PlaceToCubePlayabilityGridArray(1,_coordinates.x + 1, _coordinates.y + 1);
                 }
-                if (gameHandler.GridArray[_coordinates.x - 1, _coordinates.y + 1] == 0)
+                if (_board.Matrix[_coordinates.x - 1, _coordinates.y + 1].Piece == null)
                 {
                     gameHandler.PlaceToCubePlayabilityGridArray(1,_coordinates.x - 1, _coordinates.y + 1);
                 }
@@ -182,11 +167,11 @@ public class Piece : MonoBehaviour
             }
             else if (side == Side.Red)
             {
-                if (gameHandler.GridArray[_coordinates.x + 1, _coordinates.y - 1] == 0 )
+                if (_board.Matrix[_coordinates.x + 1, _coordinates.y - 1].Piece == null)
                 {
                     gameHandler.PlaceToCubePlayabilityGridArray(1,_coordinates.x + 1, _coordinates.y - 1);
                 }
-                if (gameHandler.GridArray[_coordinates.x - 1, _coordinates.y - 1] == 0)
+                if (_board.Matrix[_coordinates.x - 1, _coordinates.y - 1].Piece == null)
                 {
                     gameHandler.PlaceToCubePlayabilityGridArray(1,_coordinates.x - 1, _coordinates.y - 1);
                 }
@@ -200,7 +185,6 @@ public class Piece : MonoBehaviour
     {
         _pieceHasToTake = false;
         CheckHasToTake();
-        CheckPieceToEliminate();
         if (!gameHandler.HasToTake)
         {
             CheckNormalPlayablity();
