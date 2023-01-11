@@ -15,15 +15,4 @@ public class Board : MonoBehaviour
             _matrix[tile.Coordinate.x, tile.Coordinate.y] = tile;
         }
     }
-    
-    // private void FillGridEdges()
-    // {
-    //     for (int i = 0; i < 10; i++)
-    //     {
-    //         _pieceArray[0, i] = 3;
-    //         _pieceArray[9, i] = 3;
-    //         _pieceArray[i, 0] = 3;
-    //         _pieceArray[i, 9] = 3;
-    //     }
-    // }
 }
