@@ -6,7 +6,7 @@ public class Board : MonoBehaviour
 
     public Tile[,] Matrix => _matrix;
 
-    private void Awake()
+    public void Init()
     {
         var tiles = GetComponentsInChildren<Tile>();
         foreach (var tile in tiles) 

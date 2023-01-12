@@ -1,24 +1,21 @@
 using System;
 using System.Collections.Generic;
+using System.Net.NetworkInformation;
 using UnityEngine;
 
 public class GameHandler : MonoBehaviour
 {
     [SerializeField] private Board _board;
+    [SerializeField] private Pieces _pieces;
+
+    public Board Board => _board;
+    public Pieces Pieces => _pieces;
+    
+    
     private TurnHandler _turnHandler = new TurnHandler();
     public TurnHandler TurnHandler => _turnHandler;
 
-    public Board Board => _board;
-
-    private Piece _currentPiece;
-
-    public Piece CurrentPiece => _currentPiece;
-
-    private bool _redPlayersTurn = false;
     private bool _clickedAPiece = false;
-
-    private List<Piece> whitePieces = new List<Piece>();
-    private List<Piece> redPieces = new List<Piece>();
 
     private bool _redHasToTake = false;
     public bool RedHasToTake => _redHasToTake;
@@ -26,10 +23,20 @@ public class GameHandler : MonoBehaviour
     private bool _whiteHasToTake = false;
     public bool WhiteHasToTake => _whiteHasToTake;
     
-    private bool _pieceMoved = false;
-
-    public Action OnClickedAPiece;
+    
+    private Piece _currentPiece;
+    
+    public Piece CurrentPiece => _currentPiece;
+    
+    public Action OnRefreshTiles;
     public Action OnMovePiece;
+
+    private void Awake()
+    {
+        Board.Init();
+        Pieces.Init();
+        Pieces.PrepareForNextTurn();
+    }
 
     public void PlaceToBoard(Piece piece, int x, int y)
     {
@@ -63,10 +70,9 @@ public class GameHandler : MonoBehaviour
         _board.Matrix[x, y].Playable = false;
     }
     
-    public void SetClickedAPiece(bool state)
+    public void RefreshTiles()
     {
-        _clickedAPiece = state;
-        OnClickedAPiece?.Invoke();
+        OnRefreshTiles?.Invoke();
     }
 
     public void SetCurrentPiece(Piece piece)
@@ -74,11 +80,6 @@ public class GameHandler : MonoBehaviour
         _currentPiece = piece;
     }
 
-    public void SetPieceMoved(bool state)
-    {
-        _pieceMoved = state;
-    }
-    
     public void SetRedHasToTake(bool state)
     {
         _redHasToTake = state;
@@ -91,12 +92,10 @@ public class GameHandler : MonoBehaviour
 
     public void MovePiece(int x, int y)
     {
-        SetRedHasToTake(false) ;
-        SetWhiteHasToTake(false);
         _currentPiece.ChangeCoordinate(x,y);
         TurnHandler.PassTurn();
         OnMovePiece?.Invoke();
-        
+        _pieces.PrepareForNextTurn();
     }
-    
+
 }

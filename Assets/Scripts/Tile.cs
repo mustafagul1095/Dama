@@ -35,7 +35,7 @@ public class Tile : MonoBehaviour
     {
         FindCoordinates();
         _boxCollider = GetComponent<BoxCollider>();
-        gameHandler.OnClickedAPiece += HandlePieceClicked;
+        gameHandler.OnRefreshTiles += OnRefreshTiles;
     }
 
     public void FindCoordinates()
@@ -43,7 +43,7 @@ public class Tile : MonoBehaviour
         _coordinates = Vector2IntExtensions.GetCoordinateFromPosition(transform.position);
     }
 
-    private void HandlePieceClicked()
+    private void OnRefreshTiles()
     {
         bool available = gameHandler.Board.Matrix[_coordinates.x, _coordinates.y].Playable;
         highlight.SetActive(available);
@@ -53,8 +53,7 @@ public class Tile : MonoBehaviour
     private void OnMouseDown()
     {
         gameHandler.ClearTilePlayabilityMatrix();
-        gameHandler.SetClickedAPiece(false);
+        gameHandler.RefreshTiles();
         gameHandler.MovePiece(_coordinates.x, _coordinates.y);
-
     }
 }
