@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class GameHandler : MonoBehaviour
@@ -16,8 +17,14 @@ public class GameHandler : MonoBehaviour
     private bool _redPlayersTurn = false;
     private bool _clickedAPiece = false;
 
-    private bool _hasToTake = false;
-    public bool HasToTake => _hasToTake;
+    private List<Piece> whitePieces = new List<Piece>();
+    private List<Piece> redPieces = new List<Piece>();
+
+    private bool _redHasToTake = false;
+    public bool RedHasToTake => _redHasToTake;
+    
+    private bool _whiteHasToTake = false;
+    public bool WhiteHasToTake => _whiteHasToTake;
     
     private bool _pieceMoved = false;
 
@@ -72,14 +79,20 @@ public class GameHandler : MonoBehaviour
         _pieceMoved = state;
     }
     
-    public void SetHasToTake(bool state)
+    public void SetRedHasToTake(bool state)
     {
-        _hasToTake = state;
+        _redHasToTake = state;
     }
     
+    public void SetWhiteHasToTake(bool state)
+    {
+        _whiteHasToTake = state;
+    }
+
     public void MovePiece(int x, int y)
     {
-        _hasToTake = false;
+        SetRedHasToTake(false) ;
+        SetWhiteHasToTake(false);
         _currentPiece.ChangeCoordinate(x,y);
         TurnHandler.PassTurn();
         OnMovePiece?.Invoke();
