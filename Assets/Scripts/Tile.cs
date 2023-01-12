@@ -10,9 +10,11 @@ public class Tile : MonoBehaviour
 
     [SerializeField] private GameHandler gameHandler;
     [SerializeField] private GameObject highlight;
+    [SerializeField] private bool _isWood;
+    public bool IsWood => _isWood;
 
     private Piece _piece;
-
+    
     public Piece Piece
     {
         get => _piece;
@@ -50,8 +52,9 @@ public class Tile : MonoBehaviour
 
     private void OnMouseDown()
     {
-        gameHandler.ClearCubePlayabilityGrid();
+        gameHandler.ClearTilePlayabilityMatrix();
         gameHandler.SetClickedAPiece(false);
         gameHandler.MovePiece(_coordinates.x, _coordinates.y);
+
     }
 }

@@ -4,6 +4,8 @@ using UnityEngine;
 public class GameHandler : MonoBehaviour
 {
     [SerializeField] private Board _board;
+    private TurnHandler _turnHandler = new TurnHandler();
+    public TurnHandler TurnHandler => _turnHandler;
 
     public Board Board => _board;
 
@@ -22,34 +24,34 @@ public class GameHandler : MonoBehaviour
     public Action OnClickedAPiece;
     public Action OnMovePiece;
 
-    public void PlaceToGridArray(Piece piece, int x, int y)
+    public void PlaceToBoard(Piece piece, int x, int y)
     {
         _board.Matrix[x, y].Piece = piece;
         piece.SetTile(_board.Matrix[x, y]);
     }
 
-    public void RemoveFromGridArray(int x, int y)
+    public void RemoveFromBoard(int x, int y)
     {
         _board.Matrix[x, y].Piece = null;
     }
 
-    public void ClearCubePlayabilityGrid()
+    public void ClearTilePlayabilityMatrix()
     {
         for (int i = 0; i < 10; i++)
         {
             for (int j = 0; j < 10; j++)
             {
-                RemoveFromCubePlayabilityGridArray(i, j);
+                DisableTilePlayability(i, j);
             }
         }
     }
 
-    public void PlaceToCubePlayabilityGridArray(int value, int x, int y)
+    public void ChangeTilePlayability(int value, int x, int y)
     {
         _board.Matrix[x, y].Playable = value == 1;
     }
 
-    public void RemoveFromCubePlayabilityGridArray(int x, int y)
+    public void DisableTilePlayability(int x, int y)
     {
         _board.Matrix[x, y].Playable = false;
     }
@@ -79,8 +81,9 @@ public class GameHandler : MonoBehaviour
     {
         _hasToTake = false;
         _currentPiece.ChangeCoordinate(x,y);
+        TurnHandler.PassTurn();
         OnMovePiece?.Invoke();
+        
     }
-
-
+    
 }
