@@ -93,9 +93,25 @@ public class GameHandler : MonoBehaviour
     public void MovePiece(int x, int y)
     {
         _currentPiece.ChangeCoordinate(x,y);
+        if (!((TurnHandler.Turn == Turn.White && _redHasToTake)))
+        {
+            _pieces.CalculateWhiteHasToTake();
+            if (_whiteHasToTake)
+            {
+                TurnHandler.PassTurn();
+            }
+        }
+        else if (!((TurnHandler.Turn == Turn.Red && _whiteHasToTake)))
+        {
+            _pieces.CalculateRedHasToTake();
+            if (_redHasToTake)
+            {
+                TurnHandler.PassTurn();
+            }
+        }
         TurnHandler.PassTurn();
         OnMovePiece?.Invoke();
         _pieces.PrepareForNextTurn();
-    }
 
+    }
 }

@@ -11,6 +11,7 @@ public class Piece : MonoBehaviour
     private bool _normalPlayable = false;
     private CapsuleCollider _collider;
     private bool _pieceHasToTake = false;
+    private bool _isPromoted;
 
     public bool PieceHasToTake => _pieceHasToTake;
 

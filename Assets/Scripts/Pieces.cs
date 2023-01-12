@@ -53,7 +53,7 @@ public class Pieces : MonoBehaviour
         }
     }
 
-    private void CalculateHasToTake()
+    public void CalculateHasToTake()
     {
         foreach (var piece in _allPieces)
         {
@@ -64,7 +64,7 @@ public class Pieces : MonoBehaviour
         CalculateWhiteHasToTake();
     }
     
-    private void CalculateWhiteHasToTake()
+    public void CalculateWhiteHasToTake()
     {
         _gameHandler.SetWhiteHasToTake(false);
 
@@ -77,7 +77,7 @@ public class Pieces : MonoBehaviour
         }
     }
     
-    private void CalculateRedHasToTake()
+    public void CalculateRedHasToTake()
     {
         _gameHandler.SetRedHasToTake(false);
 
