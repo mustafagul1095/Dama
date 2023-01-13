@@ -6,21 +6,30 @@ using UnityEngine;
 public class Piece : MonoBehaviour
 {
     [SerializeField] private GameHandler gameHandler;
-    private Board _board;
+
+    [SerializeField] private Side _side;
+    
     private Vector2Int _coord = new Vector2Int();
+
+    public Vector2Int Coord => _coord;
+    
     private bool _normalPlayable = false;
+    
     private CapsuleCollider _collider;
     private bool _pieceHasToTake = false;
     private bool _isPromoted;
-
+    
     public bool PieceHasToTake => _pieceHasToTake;
 
     private List<Piece> _piecesToEliminate = new List<Piece>(2);
-    [SerializeField] private Side _side;
-    
+
+    public List<Piece> PiecesToEliminate => _piecesToEliminate;
+
     public Side Side => _side;
 
     private Tile _tile;
+    
+    private PiecePlayability _playability;
 
     public void SetTile(Tile tile)
     {
@@ -29,11 +38,24 @@ public class Piece : MonoBehaviour
     
     public void Init()
     {
-        _board = gameHandler.Board;
+        
         _collider = GetComponent<CapsuleCollider>();
         FindCoordinates();
         PlaceToGrid();
         gameHandler.OnMovePiece += OnMovePiece;
+        InitPlayability();
+    }
+
+    private void InitPlayability()
+    {
+        if (_side == Side.White)
+        {
+            _playability = new WhitePiecePlayability(this, gameHandler);
+        }
+        else
+        {
+            _playability = new RedPiecePlayability(this, gameHandler);
+        }
     }
     
     private void OnMovePiece()
@@ -48,7 +70,7 @@ public class Piece : MonoBehaviour
     {
         if (!MySideHasToTake())
         {
-            CheckNormalPlayablity();
+            _normalPlayable = _playability.GetCalculatedNormalPlayability();
         }
     }
 
@@ -64,94 +86,11 @@ public class Piece : MonoBehaviour
     {
         if(MySideHasToTake())
         {
-            ChangeHasToTakePlayability();
+            _playability.ChangeHasToTakePlayability();
         }
         else
         {
-            ChangeNormalPlayability();
-        }
-    }
-
-    private void ChangeHasToTakePlayability()
-    {
-        Vector2Int placeToMove;
-        if (_side == Side.White)
-        {
-            if (_board.Matrix[_coord.x + 1, _coord.y + 1].Piece?._side == Side.Red &&
-                !_board.Matrix[_coord.x + 1, _coord.y + 1].IsWood)
-            {
-                if (_board.Matrix[_coord.x + 2, _coord.y + 2].Piece == null &&
-                    !_board.Matrix[_coord.x + 2, _coord.y + 2].IsWood)
-                {
-                    placeToMove = new Vector2Int(_coord.x + 2, _coord.y + 2);
-                    gameHandler.ChangeTilePlayability(1,placeToMove.x,placeToMove.y);
-                }
-            }
-            if (_board.Matrix[_coord.x - 1, _coord.y + 1].Piece?._side == Side.Red &&
-                !_board.Matrix[_coord.x - 1, _coord.y + 1].IsWood)
-            {
-                if (_board.Matrix[_coord.x - 2, _coord.y + 2].Piece == null &&
-                    !_board.Matrix[_coord.x - 2, _coord.y + 2].IsWood)
-                {
-                    placeToMove = new Vector2Int(_coord.x - 2, _coord.y + 2); 
-                    gameHandler.ChangeTilePlayability(1,placeToMove.x,placeToMove.y);
-                }
-            }
-        }
-        if (_side == Side.Red)
-        {
-            if (_board.Matrix[_coord.x + 1, _coord.y - 1].Piece?._side == Side.White &&
-                !_board.Matrix[_coord.x + 1, _coord.y - 1].IsWood)
-            {
-                if (_board.Matrix[_coord.x + 2, _coord.y - 2].Piece == null &&
-                    !_board.Matrix[_coord.x + 2, _coord.y - 2].IsWood)
-                {
-                    placeToMove = new Vector2Int(_coord.x + 2, _coord.y - 2); 
-                    gameHandler.ChangeTilePlayability(1,placeToMove.x,placeToMove.y);
-                }
-            }
-            if (_board.Matrix[_coord.x - 1, _coord.y - 1].Piece?._side == Side.White &&
-                !_board.Matrix[_coord.x - 1, _coord.y - 1].IsWood)
-            {
-                if (_board.Matrix[_coord.x - 2, _coord.y - 2].Piece == null &&
-                    !_board.Matrix[_coord.x - 2, _coord.y - 2].IsWood)
-                {
-                    placeToMove = new Vector2Int(_coord.x - 2, _coord.y - 2);
-                    gameHandler.ChangeTilePlayability(1,placeToMove.x,placeToMove.y);
-                }
-            }
-        }
-    }
-
-    private void ChangeNormalPlayability()
-    {
-        if (_side == Side.White)
-        {
-            if (_board.Matrix[_coord.x + 1, _coord.y + 1].Piece == null &&
-                !_board.Matrix[_coord.x + 1, _coord.y + 1].IsWood)
-            {
-                gameHandler.ChangeTilePlayability(1, _coord.x + 1, _coord.y + 1);
-            }
-
-            if (_board.Matrix[_coord.x - 1, _coord.y + 1].Piece == null &&
-                !_board.Matrix[_coord.x - 1, _coord.y + 1].IsWood)
-            {
-                gameHandler.ChangeTilePlayability(1, _coord.x - 1, _coord.y + 1);
-            }
-        }
-        else if (_side == Side.Red)
-        {
-            if (_board.Matrix[_coord.x + 1, _coord.y - 1].Piece == null &&
-                !_board.Matrix[_coord.x + 1, _coord.y - 1].IsWood)
-            {
-                gameHandler.ChangeTilePlayability(1, _coord.x + 1, _coord.y - 1);
-            }
-
-            if (_board.Matrix[_coord.x - 1, _coord.y - 1].Piece == null &&
-                !_board.Matrix[_coord.x - 1, _coord.y - 1].IsWood)
-            {
-                gameHandler.ChangeTilePlayability(1, _coord.x - 1, _coord.y - 1);
-            }
+            _playability.ChangeNormalPlayability();
         }
     }
 
@@ -184,71 +123,15 @@ public class Piece : MonoBehaviour
         gameHandler.RemoveFromBoard(_coord.x, _coord.y);
     }
 
-    private void CheckNormalPlayablity()
-    {
-        if (_side == Side.White)
-        {
-            _normalPlayable = (_board.Matrix[_coord.x + 1, _coord.y + 1].Piece == null &&
-                               !_board.Matrix[_coord.x + 1, _coord.y + 1].IsWood) ||
-                               (_board.Matrix[_coord.x - 1, _coord.y + 1].Piece == null && 
-                               !_board.Matrix[_coord.x - 1, _coord.y + 1].IsWood);
-        }
-        else if (_side == Side.Red)
-        {
-            _normalPlayable = (_board.Matrix[_coord.x + 1, _coord.y - 1].Piece == null &&
-                               !_board.Matrix[_coord.x + 1, _coord.y - 1].IsWood) ||
-                              (_board.Matrix[_coord.x - 1, _coord.y - 1].Piece == null && 
-                               !_board.Matrix[_coord.x - 1, _coord.y - 1].IsWood);
-        }
-    }
+
 
     public void CalculateHasToTakeForNextTurn()
     {
         _piecesToEliminate.Clear();
-        if (_side == Side.White)
-        {
-            if (_board.Matrix[_coord.x + 1, _coord.y + 1].Piece?._side == Side.Red &&
-                !_board.Matrix[_coord.x + 1, _coord.y + 1].IsWood)
-            {
-                if (_board.Matrix[_coord.x + 2, _coord.y + 2].Piece == null &&
-                    !_board.Matrix[_coord.x + 2, _coord.y + 2].IsWood)
-                {
-                    _piecesToEliminate.Add(_board.Matrix[_coord.x + 1, _coord.y + 1].Piece);
-                }
-            }
-            if (_board.Matrix[_coord.x - 1, _coord.y + 1].Piece?._side == Side.Red &&
-                !_board.Matrix[_coord.x - 1, _coord.y + 1].IsWood)
-            {
-                if (_board.Matrix[_coord.x - 2, _coord.y + 2].Piece == null &&
-                    !_board.Matrix[_coord.x - 2, _coord.y + 2].IsWood)
-                {
-                    _piecesToEliminate.Add(_board.Matrix[_coord.x - 1, _coord.y + 1].Piece);
-                }
-            }
-        }
-        if (_side == Side.Red)
-        {
-            if (_board.Matrix[_coord.x + 1, _coord.y - 1].Piece?._side == Side.White &&
-                !_board.Matrix[_coord.x + 1, _coord.y - 1].IsWood)
-            {
-                if (_board.Matrix[_coord.x + 2, _coord.y - 2].Piece == null &&
-                    !_board.Matrix[_coord.x + 2, _coord.y - 2].IsWood)
-                {
-                    _piecesToEliminate.Add(_board.Matrix[_coord.x + 1, _coord.y - 1].Piece);
-                }
-            }
-            if (_board.Matrix[_coord.x - 1, _coord.y - 1].Piece?._side == Side.White &&
-                !_board.Matrix[_coord.x - 1, _coord.y - 1].IsWood)
-            {
-                if (_board.Matrix[_coord.x - 2, _coord.y - 2].Piece == null &&
-                    !_board.Matrix[_coord.x - 2, _coord.y - 2].IsWood)
-                {
-                    _piecesToEliminate.Add(_board.Matrix[_coord.x - 1, _coord.y - 1].Piece);
-                }
-            }
-        }
+        _playability.FindPiecesToEliminate();
         DecideHasToTake();
     }
+    
 
     private bool MySideHasToTake()
     {
