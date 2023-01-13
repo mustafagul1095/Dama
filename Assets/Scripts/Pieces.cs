@@ -5,9 +5,9 @@ public class Pieces : MonoBehaviour
 {
     [SerializeField] private GameHandler _gameHandler;
     
-    private List<Piece> _whitePieces = new List<Piece>();
+    private readonly List<Piece> _blackPieces = new List<Piece>();
     
-    private List<Piece> _redPieces = new List<Piece>();
+    private readonly List<Piece> _redPieces = new List<Piece>();
 
     private List<Piece> _allPieces = new List<Piece>();
 
@@ -30,7 +30,7 @@ public class Pieces : MonoBehaviour
             }
             else
             {
-                _whitePieces.Add(piece);
+                _blackPieces.Add(piece);
             }
         }
     }
@@ -69,18 +69,18 @@ public class Pieces : MonoBehaviour
         }
         
         CalculateRedHasToTake();
-        CalculateWhiteHasToTake();
+        CalculateBlackHasToTake();
     }
     
-    public void CalculateWhiteHasToTake()
+    public void CalculateBlackHasToTake()
     {
-        _gameHandler.SetWhiteHasToTake(false);
+        _gameHandler.SetBlackHasToTake(false);
 
-        foreach (var whitePiece in _whitePieces)
+        foreach (var blackPiece in _blackPieces)
         {
-            if (whitePiece.PieceHasToTake)
+            if (blackPiece.PieceHasToTake)
             {
-                _gameHandler.SetWhiteHasToTake(true);
+                _gameHandler.SetBlackHasToTake(true);
             }
         }
     }
@@ -105,9 +105,9 @@ public class Pieces : MonoBehaviour
         {
             _redPieces.Remove(piece);
         }
-        if (_whitePieces.Contains(piece))
+        if (_blackPieces.Contains(piece))
         {
-            _whitePieces.Remove(piece);
+            _blackPieces.Remove(piece);
         }
     }
 }

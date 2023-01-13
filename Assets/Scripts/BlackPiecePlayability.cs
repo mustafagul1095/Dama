@@ -1,6 +1,6 @@
-﻿public class WhitePiecePlayability : PiecePlayability
+﻿public class BlackPiecePlayability : PiecePlayability
 {
-    public WhitePiecePlayability(Piece piece, GameHandler gameHandler) : base(piece, gameHandler)
+    public BlackPiecePlayability(Piece piece, GameHandler gameHandler) : base(piece, gameHandler)
     {
     }
     public override void ChangeHasToTakePlayability()

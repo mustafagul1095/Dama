@@ -5,23 +5,22 @@ using UnityEngine;
 
 public class GameHandler : MonoBehaviour
 {
-    [SerializeField] private Board _board;
-    [SerializeField] private Pieces _pieces;
+    [SerializeField] private Board board;
+    [SerializeField] private Pieces pieces;
 
-    public Board Board => _board;
-    public Pieces Pieces => _pieces;
+    public Board Board => board;
+    public Pieces Pieces => pieces;
     
     
-    private TurnHandler _turnHandler = new TurnHandler();
+    private readonly TurnHandler _turnHandler = new TurnHandler();
     public TurnHandler TurnHandler => _turnHandler;
-
-    private bool _clickedAPiece = false;
+    
 
     private bool _redHasToTake = false;
     public bool RedHasToTake => _redHasToTake;
     
-    private bool _whiteHasToTake = false;
-    public bool WhiteHasToTake => _whiteHasToTake;
+    private bool _blackHasToTake = false;
+    public bool BlackHasToTake => _blackHasToTake;
     
     
     private bool _redHasTaken = false;
@@ -31,12 +30,7 @@ public class GameHandler : MonoBehaviour
         set => _redHasTaken = value;
     }
 
-    private bool _whiteHasTaken = false;
-    public bool WhiteHasTaken
-    {
-        get => _whiteHasTaken;
-        set => _whiteHasTaken = value;
-    }
+    public bool BlackHasTaken { get; set; } = false;
 
 
     private Piece _currentPiece;
@@ -57,13 +51,13 @@ public class GameHandler : MonoBehaviour
 
     public void PlaceToBoard(Piece piece, int x, int y)
     {
-        _board.Matrix[x, y].Piece = piece;
-        piece.SetTile(_board.Matrix[x, y]);
+        board.Matrix[x, y].Piece = piece;
+        piece.SetTile(board.Matrix[x, y]);
     }
 
     public void RemoveFromBoard(int x, int y)
     {
-        _board.Matrix[x, y].Piece = null;
+        board.Matrix[x, y].Piece = null;
     }
 
     public void ClearTilePlayabilityMatrix()
@@ -79,12 +73,12 @@ public class GameHandler : MonoBehaviour
 
     public void ChangeTilePlayability(int value, int x, int y)
     {
-        _board.Matrix[x, y].Playable = value == 1;
+        board.Matrix[x, y].Playable = value == 1;
     }
 
     public void DisableTilePlayability(int x, int y)
     {
-        _board.Matrix[x, y].Playable = false;
+        board.Matrix[x, y].Playable = false;
     }
     
     public void RefreshTiles()
@@ -102,9 +96,9 @@ public class GameHandler : MonoBehaviour
         _redHasToTake = state;
     }
     
-    public void SetWhiteHasToTake(bool state)
+    public void SetBlackHasToTake(bool state)
     {
-        _whiteHasToTake = state;
+        _blackHasToTake = state;
     }
 
     public void MovePiece(int x, int y)
@@ -119,15 +113,15 @@ public class GameHandler : MonoBehaviour
 
     private void ResetHasTaken()
     {
-        _whiteHasTaken = false;
+        BlackHasTaken = false;
         _redHasTaken = false;
     }
     
     private void CalculateSequentialCombo()
     {
-        if (TurnHandler.Turn == Side.White)
+        if (TurnHandler.Turn == Side.Black)
         {
-            if (!(_whiteHasToTake && _whiteHasTaken))
+            if (!(_blackHasToTake && BlackHasTaken))
             {
                 TurnHandler.PassTurn();
             }

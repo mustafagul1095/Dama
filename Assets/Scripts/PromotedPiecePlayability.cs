@@ -1,36 +1,36 @@
 ﻿public class PromotedPiecePlayability : PiecePlayability
 {
     private RedPiecePlayability _redPiecePlayability;
-    private WhitePiecePlayability _whitePiecePlayability;
+    private BlackPiecePlayability _blackPiecePlayability;
     
     public PromotedPiecePlayability(Piece piece, GameHandler gameHandler) : base(piece, gameHandler)
     {
         _redPiecePlayability = new RedPiecePlayability(piece, gameHandler);
-        _whitePiecePlayability = new WhitePiecePlayability(piece, gameHandler);
+        _blackPiecePlayability = new BlackPiecePlayability(piece, gameHandler);
     }
 
     public override void ChangeHasToTakePlayability()
     {
         _redPiecePlayability.ChangeHasToTakePlayability();
-        _whitePiecePlayability.ChangeHasToTakePlayability();
+        _blackPiecePlayability.ChangeHasToTakePlayability();
     }
 
     public override bool GetCalculatedNormalPlayability()
     {
         return _redPiecePlayability.GetCalculatedNormalPlayability() ||
-               _whitePiecePlayability.GetCalculatedNormalPlayability();
+               _blackPiecePlayability.GetCalculatedNormalPlayability();
     }
 
     public override void ChangeNormalPlayability()
     {
         _redPiecePlayability.ChangeNormalPlayability();
-        _whitePiecePlayability.ChangeNormalPlayability();
+        _blackPiecePlayability.ChangeNormalPlayability();
     }
 
     public override void FindPiecesToEliminate()
     {
         _redPiecePlayability.FindPiecesToEliminate();
-        _whitePiecePlayability.FindPiecesToEliminate();
+        _blackPiecePlayability.FindPiecesToEliminate();
     }
 
     public override void TryPromote()

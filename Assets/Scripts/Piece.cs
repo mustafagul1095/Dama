@@ -48,9 +48,9 @@ public class Piece : MonoBehaviour
 
     private void InitPlayability()
     {
-        if (_side == Side.White)
+        if (_side == Side.Black)
         {
-            _playability = new WhitePiecePlayability(this, gameHandler);
+            _playability = new BlackPiecePlayability(this, gameHandler);
         }
         else
         {
@@ -136,7 +136,7 @@ public class Piece : MonoBehaviour
 
     private bool MySideHasToTake()
     {
-        return (_side == Side.White && gameHandler.WhiteHasToTake) || (_side == Side.Red && gameHandler.RedHasToTake);
+        return (_side == Side.Black && gameHandler.BlackHasToTake) || (_side == Side.Red && gameHandler.RedHasToTake);
     }
     
     private void DecideHasToTake()
@@ -185,7 +185,7 @@ public class Piece : MonoBehaviour
             }
             else
             {
-                gameHandler.WhiteHasTaken = true;
+                gameHandler.BlackHasTaken = true;
             }
         }
     }

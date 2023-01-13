@@ -2,7 +2,7 @@
 
 public class TurnHandler
 {
-    private Side _turn = Side.White;
+    private Side _turn = Side.Black;
     public Side Turn => _turn;
 
     public void PassTurn()
@@ -10,7 +10,7 @@ public class TurnHandler
         
         if (_turn == Side.Red)
         {
-            _turn = Side.White;
+            _turn = Side.Black;
         }
         else 
         {
