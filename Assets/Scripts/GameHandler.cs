@@ -24,6 +24,21 @@ public class GameHandler : MonoBehaviour
     public bool WhiteHasToTake => _whiteHasToTake;
     
     
+    private bool _redHasTaken = false;
+    public bool RedHasTaken
+    {
+        get => _redHasTaken;
+        set => _redHasTaken = value;
+    }
+
+    private bool _whiteHasTaken = false;
+    public bool WhiteHasTaken
+    {
+        get => _whiteHasTaken;
+        set => _whiteHasTaken = value;
+    }
+
+
     private Piece _currentPiece;
     
     public Piece CurrentPiece => _currentPiece;
@@ -36,6 +51,8 @@ public class GameHandler : MonoBehaviour
         Board.Init();
         Pieces.Init();
         Pieces.PrepareForNextTurn();
+        Pieces.HandleClickEnable();
+
     }
 
     public void PlaceToBoard(Piece piece, int x, int y)
@@ -92,26 +109,35 @@ public class GameHandler : MonoBehaviour
 
     public void MovePiece(int x, int y)
     {
+        ResetHasTaken();
         _currentPiece.ChangeCoordinate(x,y);
-        if (!((TurnHandler.Turn == Turn.White && _redHasToTake)))
-        {
-            _pieces.CalculateWhiteHasToTake();
-            if (_whiteHasToTake)
-            {
-                TurnHandler.PassTurn();
-            }
-        }
-        else if (!((TurnHandler.Turn == Turn.Red && _whiteHasToTake)))
-        {
-            _pieces.CalculateRedHasToTake();
-            if (_redHasToTake)
-            {
-                TurnHandler.PassTurn();
-            }
-        }
-        TurnHandler.PassTurn();
         OnMovePiece?.Invoke();
-        _pieces.PrepareForNextTurn();
+        Pieces.PrepareForNextTurn();
+        CalculateSequentialCombo();
+        Pieces.HandleClickEnable();
+    }
 
+    private void ResetHasTaken()
+    {
+        _whiteHasTaken = false;
+        _redHasTaken = false;
+    }
+    
+    private void CalculateSequentialCombo()
+    {
+        if (TurnHandler.Turn == Side.White)
+        {
+            if (!(_whiteHasToTake && _whiteHasTaken))
+            {
+                TurnHandler.PassTurn();
+            }
+        }
+        else if (TurnHandler.Turn == Side.Red)
+        {
+            if (!(_redHasToTake && _redHasTaken))
+            {
+                TurnHandler.PassTurn();
+            }
+        }
     }
 }

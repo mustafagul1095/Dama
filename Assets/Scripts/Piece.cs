@@ -50,7 +50,6 @@ public class Piece : MonoBehaviour
         {
             CheckNormalPlayablity();
         }
-        HandleClickEnable();
     }
 
     private void OnMouseDown()
@@ -76,7 +75,7 @@ public class Piece : MonoBehaviour
     private void ChangeHasToTakePlayability()
     {
         Vector2Int placeToMove;
-        if (_side == Side.White && gameHandler.TurnHandler.Turn == Turn.White)
+        if (_side == Side.White)
         {
             if (_board.Matrix[_coord.x + 1, _coord.y + 1].Piece?._side == Side.Red &&
                 !_board.Matrix[_coord.x + 1, _coord.y + 1].IsWood)
@@ -99,7 +98,7 @@ public class Piece : MonoBehaviour
                 }
             }
         }
-        if (_side == Side.Red && gameHandler.TurnHandler.Turn == Turn.Red)
+        if (_side == Side.Red)
         {
             if (_board.Matrix[_coord.x + 1, _coord.y - 1].Piece?._side == Side.White &&
                 !_board.Matrix[_coord.x + 1, _coord.y - 1].IsWood)
@@ -126,7 +125,7 @@ public class Piece : MonoBehaviour
 
     private void ChangeNormalPlayability()
     {
-        if (_side == Side.White && gameHandler.TurnHandler.Turn == Turn.White)
+        if (_side == Side.White)
         {
             if (_board.Matrix[_coord.x + 1, _coord.y + 1].Piece == null &&
                 !_board.Matrix[_coord.x + 1, _coord.y + 1].IsWood)
@@ -140,7 +139,7 @@ public class Piece : MonoBehaviour
                 gameHandler.ChangeTilePlayability(1, _coord.x - 1, _coord.y + 1);
             }
         }
-        else if (_side == Side.Red && gameHandler.TurnHandler.Turn == Turn.Red)
+        else if (_side == Side.Red)
         {
             if (_board.Matrix[_coord.x + 1, _coord.y - 1].Piece == null &&
                 !_board.Matrix[_coord.x + 1, _coord.y - 1].IsWood)
@@ -187,14 +186,14 @@ public class Piece : MonoBehaviour
 
     private void CheckNormalPlayablity()
     {
-        if (_side == Side.White && gameHandler.TurnHandler.Turn == Turn.White)
+        if (_side == Side.White)
         {
             _normalPlayable = (_board.Matrix[_coord.x + 1, _coord.y + 1].Piece == null &&
                                !_board.Matrix[_coord.x + 1, _coord.y + 1].IsWood) ||
                                (_board.Matrix[_coord.x - 1, _coord.y + 1].Piece == null && 
                                !_board.Matrix[_coord.x - 1, _coord.y + 1].IsWood);
         }
-        else if (_side == Side.Red && gameHandler.TurnHandler.Turn == Turn.Red)
+        else if (_side == Side.Red)
         {
             _normalPlayable = (_board.Matrix[_coord.x + 1, _coord.y - 1].Piece == null &&
                                !_board.Matrix[_coord.x + 1, _coord.y - 1].IsWood) ||
@@ -203,10 +202,10 @@ public class Piece : MonoBehaviour
         }
     }
 
-    public void CalculateHasToTake()
+    public void CalculateHasToTakeForNextTurn()
     {
         _piecesToEliminate.Clear();
-        if (_side == Side.White && gameHandler.TurnHandler.Turn == Turn.White)
+        if (_side == Side.White)
         {
             if (_board.Matrix[_coord.x + 1, _coord.y + 1].Piece?._side == Side.Red &&
                 !_board.Matrix[_coord.x + 1, _coord.y + 1].IsWood)
@@ -227,7 +226,7 @@ public class Piece : MonoBehaviour
                 }
             }
         }
-        if (_side == Side.Red && gameHandler.TurnHandler.Turn == Turn.Red)
+        if (_side == Side.Red)
         {
             if (_board.Matrix[_coord.x + 1, _coord.y - 1].Piece?._side == Side.White &&
                 !_board.Matrix[_coord.x + 1, _coord.y - 1].IsWood)
@@ -261,20 +260,29 @@ public class Piece : MonoBehaviour
         _pieceHasToTake = _piecesToEliminate.Count > 0;
     }
 
-    private void HandleClickEnable()
+    public void HandleClickEnable()
     {
-        if (MySideHasToTake())
+        if (_side == gameHandler.TurnHandler.Turn)
         {
-            _collider.enabled = _pieceHasToTake;
+            if (MySideHasToTake())
+            {
+                _collider.enabled = _pieceHasToTake;
+            }
+            else
+            {
+                _collider.enabled = _normalPlayable;
+            }
         }
         else
         {
-            _collider.enabled = _normalPlayable;
+            _collider.enabled = false;
         }
     }
 
     private void EliminatePieces()
     {
+        CalculateHasTaken();
+
         foreach (var piece in _piecesToEliminate)
         {
             piece.RemoveFromGrid();
@@ -282,7 +290,22 @@ public class Piece : MonoBehaviour
             Destroy(piece.gameObject);
         }
     }
-    
+
+    private void CalculateHasTaken()
+    {
+        if (_piecesToEliminate.Count > 0)
+        {
+            if (_side == Side.Red)
+            {
+                gameHandler.RedHasTaken = true;
+            }
+            else
+            {
+                gameHandler.WhiteHasTaken = true;
+            }
+        }
+    }
+
     private void OnDestroy()
     {
         gameHandler.OnMovePiece -= OnMovePiece;

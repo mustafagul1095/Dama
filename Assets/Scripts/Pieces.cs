@@ -45,7 +45,7 @@ public class Pieces : MonoBehaviour
     
     public void PrepareForNextTurn()
     {
-        CalculateHasToTake();
+        CalculateHasToTakeForNextTurn();
 
         foreach (var piece in _allPieces)
         {
@@ -53,11 +53,19 @@ public class Pieces : MonoBehaviour
         }
     }
 
-    public void CalculateHasToTake()
+    public void HandleClickEnable()
     {
         foreach (var piece in _allPieces)
         {
-            piece.CalculateHasToTake();
+            piece.HandleClickEnable();
+        }
+    }
+
+    public void CalculateHasToTakeForNextTurn()
+    {
+        foreach (var piece in _allPieces)
+        {
+            piece.CalculateHasToTakeForNextTurn();
         }
         
         CalculateRedHasToTake();
@@ -72,6 +80,7 @@ public class Pieces : MonoBehaviour
         {
             if (whitePiece.PieceHasToTake)
             {
+                Debug.Log(whitePiece.gameObject.name);
                 _gameHandler.SetWhiteHasToTake(true);
             }
         }

@@ -2,19 +2,19 @@
 
 public class TurnHandler
 {
-    private Turn _turn = Turn.White;
-    public Turn Turn => _turn;
+    private Side _turn = Side.White;
+    public Side Turn => _turn;
 
     public void PassTurn()
     {
         
-        if (_turn == Turn.Red)
+        if (_turn == Side.Red)
         {
-            _turn = Turn.White;
+            _turn = Side.White;
         }
         else 
         {
-            _turn = Turn.Red;
+            _turn = Side.Red;
         }
     }
 }
