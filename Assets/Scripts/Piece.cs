@@ -8,6 +8,8 @@ public class Piece : MonoBehaviour
     [SerializeField] private GameHandler gameHandler;
 
     [SerializeField] private Side _side;
+
+    [SerializeField] private GameObject _promotionObject;
     
     private Vector2Int _coord = new Vector2Int();
 
@@ -197,5 +199,6 @@ public class Piece : MonoBehaviour
     public void Promote()
     {
         _playability = new PromotedPiecePlayability(this, gameHandler);
+        _promotionObject.SetActive(true);
     }
 }

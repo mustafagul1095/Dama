@@ -6,13 +6,15 @@ using UnityEngine;
 public class CheckBlackWins : MonoBehaviour
 {
     [SerializeField] private TMP_Text gameOverText;
+    [SerializeField] private GameObject canvasGameObject;
 
     private void Update()
     {
         if (GetComponentsInChildren<Piece>().Length <= 0)
         {
-            gameOverText.SetText("Black Wins !");
-            gameOverText.enabled = true;
+            gameOverText.SetText("BLACK WINS!");
+            canvasGameObject.SetActive(true);
+            
         }
     }
 }
