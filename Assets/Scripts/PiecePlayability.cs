@@ -7,8 +7,8 @@ public abstract class PiecePlayability
     protected readonly Piece Piece;
     protected readonly Board Board;
     protected readonly GameHandler GameHandler;
-    
-    public PiecePlayability(Piece piece, GameHandler gameHandler)
+
+    protected PiecePlayability(Piece piece, GameHandler gameHandler)
     {
         Piece = piece;
         Board = gameHandler.Board;
