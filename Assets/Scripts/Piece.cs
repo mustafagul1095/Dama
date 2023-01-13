@@ -17,7 +17,6 @@ public class Piece : MonoBehaviour
     
     private CapsuleCollider _collider;
     private bool _pieceHasToTake = false;
-    private bool _isPromoted;
     
     public bool PieceHasToTake => _pieceHasToTake;
 
@@ -38,7 +37,6 @@ public class Piece : MonoBehaviour
     
     public void Init()
     {
-        
         _collider = GetComponent<CapsuleCollider>();
         FindCoordinates();
         PlaceToGrid();
@@ -63,6 +61,7 @@ public class Piece : MonoBehaviour
         if (gameHandler.CurrentPiece == this)
         {
             EliminatePieces();
+            _playability.TryPromote();
         }
     }
 
@@ -193,5 +192,10 @@ public class Piece : MonoBehaviour
     {
         gameHandler.OnMovePiece -= OnMovePiece;
         _tile.Piece = null;
+    }
+
+    public void Promote()
+    {
+        _playability = new PromotedPiecePlayability(this, gameHandler);
     }
 }

@@ -80,7 +80,6 @@ public class Pieces : MonoBehaviour
         {
             if (whitePiece.PieceHasToTake)
             {
-                Debug.Log(whitePiece.gameObject.name);
                 _gameHandler.SetWhiteHasToTake(true);
             }
         }

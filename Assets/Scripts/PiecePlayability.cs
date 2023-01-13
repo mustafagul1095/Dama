@@ -20,5 +20,5 @@ public abstract class PiecePlayability
     public abstract bool GetCalculatedNormalPlayability();
     public abstract void ChangeNormalPlayability();
     public abstract void FindPiecesToEliminate();
-
+    public abstract void TryPromote();
 }
